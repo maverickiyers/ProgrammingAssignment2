@@ -1,22 +1,27 @@
-## This R code will cache the inverse of a 2x2 Mmatrix.
+## This R code will cache the inverse of a square Mmatrix.
 
 ## This function creates a special "matrix" object that can 
 ## cache its inverse.
 
 makeCacheMatrix <- function(x = matrix()) {
-    cache_value <- NULL
-    set_MatrixValue <- function(m) {
+    ## stores the cache value & initializes it to NULL
+    cache_val <- NULL 
+    ## creating the matrix in the working environment
+    set <- function(m) {   
         x <<- m
-        cache_value <<- NULL
+        cache_val <<- NULL
     }
-    get_MatrixValue <- function() x
-    set_InverseValue <- function(cm) cache_value <<- cm        
-    get_InverseValue <- function() cache_value
+    ## Getting the value of the matrix
+    get <- function() x
+    ## Inverting the matrix and storing it in cache
+    setInverse <- function(inv) cache_val <<- inv     
+    ## Getting the inverted matrix from cache
+    getInverse <- function() cache_val
+    ## Returning the listed fuctions back into working environment
     list(
-        set_MatrixValue = set_MatrixValue,
-        get_MatrixValue = get_MatrixValue,
-        set_InverseValue = set_InverseValue,
-        get_InverseValue = get_InverseValue
+        set = set, get = get,
+        setInverse = setInverse,
+        getInverse = getInverse
         )
 }
 
@@ -24,14 +29,18 @@ makeCacheMatrix <- function(x = matrix()) {
 ## returned by makeCacheMatrix function above. 
 
 cacheSolve <- function(x, ...) {
-    cache_value <- x$get_MatrixValue()
-    if(!is.null(cache_value)) {
+    ## Getting the inverted matrix stored in cache
+    cache_val <- x$getInverse()
+    ## if inverted matrix is stored in cache, return it. Else, create it.
+    if(!is.null(cache_val)) {
         message("getting cached data")
-        return(cache_value)
+        return(cache_val)
     }
-    data <- x$get_MatrixValue()
-    cache_value <- solve(data, ...)
-    x$set_InverseValue(cache_value)
+    ## Create matrix if it does not exist.
+    matrix <- x$get()
+    cache_val <- solve(matrix, ...)
+    ## Storing inverted matrix back into cache.
+    x$setInverse(cache_val)
 ## Return a matrix that is the inverse of 'x'
-    cache_value
+    return(cache_val)
 }
